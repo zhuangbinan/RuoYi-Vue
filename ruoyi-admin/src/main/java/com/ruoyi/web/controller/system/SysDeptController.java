@@ -1,6 +1,13 @@
 package com.ruoyi.web.controller.system;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.system.domain.LastBallsDTO;
+import com.ruoyi.system.mapper.LastBallsMapper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +31,7 @@ import com.ruoyi.system.service.ISysDeptService;
 
 /**
  * 部门信息
- * 
+ *
  * @author ruoyi
  */
 @RestController
@@ -33,6 +40,25 @@ public class SysDeptController extends BaseController
 {
     @Autowired
     private ISysDeptService deptService;
+
+    @Autowired
+    private LastBallsMapper lastBallsMapper;
+
+    @GetMapping("/getCurrentUser")
+    public AjaxResult getCurrentUser() {
+        final LoginUser loginUser = SecurityUtils.getLoginUser();
+        final Long userId = loginUser.getUserId();
+        logger.warn("userId:" + userId);
+        final List<LastBallsDTO> lastBallsDTOS = lastBallsMapper.lastBalls(loginUser.getUsername());
+
+        Page<LastBallsDTO> page = new Page<LastBallsDTO>(1,20);
+        System.out.println(page.toString());
+        final IPage<LastBallsDTO> lastBallsDTOS2 = lastBallsMapper.lastBalls2(page, loginUser.getUsername());
+        System.out.println(lastBallsDTOS);
+        System.out.println(lastBallsDTOS2);
+        return success().put("username", loginUser.getUsername());
+    }
+
 
     /**
      * 获取部门列表
