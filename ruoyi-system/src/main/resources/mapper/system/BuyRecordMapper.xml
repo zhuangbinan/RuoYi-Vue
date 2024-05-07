@@ -25,12 +25,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="queryNoCheckChance" resultType="com.ruoyi.system.domain.BuyRecordDTO">
-        SELECT * FROM buy_record where check_score_flag = '未兑奖' and user_name = #{userName} and count_num = #{countNum} order by create_time desc
+        SELECT * FROM buy_record where check_score_flag = '待兑奖' and user_name = #{userName} and count_num = #{countNum} order by create_time desc
     </select>
 
 <!--    按照用户购买的记录来作为开奖依据-->
     <select id="queryAllUserAndCountNum" resultType="com.ruoyi.system.domain.BuyRecordDTO">
-        SELECT max(t1.count_num) as count_num,t2.user_name FROM buy_record t1, (SELECT distinct user_name from buy_record where check_score_flag ='未兑奖') t2 where t1.user_name = t2.user_name group by t2.user_name
+        SELECT max(t1.count_num) as count_num,t2.user_name FROM buy_record t1, (SELECT distinct user_name from buy_record where check_score_flag ='待兑奖') t2 where t1.user_name = t2.user_name group by t2.user_name
     </select>
 
     <insert id="insertOne" parameterType="com.ruoyi.system.domain.BuyRecordDTO">

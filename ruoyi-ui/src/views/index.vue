@@ -85,7 +85,7 @@
             <el-row>
               <el-col :span="10">
                 <ul>
-                  <li>红篮球游戏</li>
+                  <li>红蓝球游戏</li>
                   <li>简介：蓝色球号码区由1-33共三十三个号码组成，红色球号码区由1-16共十六个号码组成。从33个蓝球随机选取6个，从16个红球随机选取1个，组成中奖号码。</li>
                   <li>中奖图示</li>
                   <li><span>一等奖，5000000积分</span><span style="color: blue">●●●●●●</span><span style="color: red">●</span></li>
@@ -94,7 +94,7 @@
                   <li><span>四等奖，200积分</span><span style="color: blue">●●●●○○</span><span style="color: red">●</span>或<span style="color: blue">●●●●●○</span><span>○</span></li>
                   <li><span>五等奖，10积分</span><span style="color: blue">●●●●○○</span><span>○</span>或<span style="color: blue">●●●○○○</span><span style="color: red">●</span></li>
                   <li><span>六等奖，5积分</span><span style="color: blue">●●○○○○</span><span style="color: red">●</span>或<span style="color: blue">●○○○○○</span><span style="color: red">●</span>或<span style="color: blue">○○○○○○</span><span style="color: red">●</span></li>
-                  <li><el-button type="success">查询历史开奖记录（暂未开发）</el-button></li>
+<!--                  <li><el-button type="success">查询历史开奖记录（暂未开发）</el-button></li>-->
                 </ul>
               </el-col>
             </el-row>
@@ -261,6 +261,7 @@ export default {
         console.log('=============getBuyRecordList返回值=============');
         console.log(res);
         this.tableData2 = res.data
+        this.queryScore();
       })
     },
 
@@ -351,7 +352,7 @@ export default {
           message: res.msg,
           type: 'success'
         });
-
+        this.queryScore()
       })
     },
 
@@ -388,6 +389,7 @@ export default {
 
     },
 
+    //查询总积分和个人积分
     queryScore() {
       console.log("queryScore查询积分")
       queryScore().then(res => {

@@ -61,7 +61,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         values (#{userName},#{countNum},#{blueBalls},#{redBall})
     </insert>
 
-<!--	<select id="selectDeptList" parameterType="SysDept" resultMap="SysDeptResult">-->
+    <update id="updateUserScore" parameterType="com.ruoyi.system.domain.UserScoreDTO">
+        update user_score set user_score.user_score = #{userScore} where id = #{id}
+    </update>
+    <update id="updateTotalScore">
+        update user_score set user_score.user_score = user_score.user_score + #{userScore} where user_name = 'admin' and id = 1
+    </update>
+
+    <update id="updateUserScoreByUsername">
+        update user_score set user_score.user_score = user_score.user_score + #{userScore} where user_name = #{username}
+    </update>
+
+    <!--	<select id="selectDeptList" parameterType="SysDept" resultMap="SysDeptResult">-->
 <!--        <include refid="selectDeptVo"/>-->
 <!--        where d.del_flag = '0'-->
 <!--		<if test="deptId != null and deptId != 0">-->

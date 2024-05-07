@@ -91,26 +91,6 @@ public class SysDeptController extends BaseController
             final List<BuyRecordDTO> records = dtoList.getRecords();
             System.out.println("getBuyRecordList");
             System.out.println(records);
-
-            /*
-            //查询这一期的中奖
-            final List<LastBallsDTO> lastBallsDTOS = lastBallsMapper.getRightBallByCountNum(login,countNum);
-
-            for (BuyRecordDTO dto : records) {
-
-                for (LastBallsDTO lastBallsDTO : lastBallsDTOS) {
-
-                    final String[] split = dto.getBlueBalls().split(",");
-
-                    if (dto.getBlueBalls().equals(lastBallsDTO.getBlueBalls()) && dto.getRedBall().equals(lastBallsDTO.getRedBall())) {
-                        dto.setRightBallFlag("一等奖");//中一等奖
-                    }else if (dto.getBlueBalls().equals(lastBallsDTO.getBlueBalls()) && !dto.getRedBall().equals(lastBallsDTO.getRedBall())) {
-                        dto.setRightBallFlag("二等奖");//中二等奖
-                    }
-
-                }
-            }
-             */
             return success().put("data", records);
         }
         return null;
@@ -127,9 +107,17 @@ public class SysDeptController extends BaseController
     }
 
 
+    /**
+     * 按期数兑奖
+     * @param countNum 期数
+     * @return
+     */
     @GetMapping("/checkRightBalls")
     public AjaxResult checkRightBalls(String countNum) {
         final String username = SecurityUtils.getUsername();
+        if (username.equals("admin")) {
+            return AjaxResult.error("管理员不支持该功能!按期数兑奖");
+        }
         //查询这一期的中奖
         //a.查中奖号码
         final List<LastBallsDTO> lastBallsDTOS = lastBallsMapper.getRightBallByCountNum(username,countNum);
@@ -145,6 +133,10 @@ public class SysDeptController extends BaseController
             final String[] buyRecordBlueBallsSplit = buyRecordDTO.getBlueBalls().split(",");
             final String[] rightBlueBallsSplit = rightBallsDTO.getBlueBalls().split(",");
 
+            for (int i = 0; i < buyRecordBlueBallsSplit.length; i++) {
+                buyRecordBlueBallsSplit[i] = buyRecordBlueBallsSplit[i].trim();
+            }
+
             final List<String> buyRecordBlueBallsList = Arrays.asList(buyRecordBlueBallsSplit);
             final List<String> rightBlueBallsList = Arrays.asList(rightBlueBallsSplit);
 
@@ -159,32 +151,85 @@ public class SysDeptController extends BaseController
             if (buyRecordDTO.getBlueBalls().equals(rightBallsDTO.getBlueBalls()) && buyRecordDTO.getRedBall().equals(rightBallsDTO.getRedBall())) {
                 buyRecordDTO.setRightBallFlag("一等奖");//中一等奖，蓝球红球都全对
                 buyRecordDTO.setCheckScoreFlag("已兑奖");
-                //TODO 获得5000000积分
+                // 获得5000000积分
+                //a.自己积分+5000000
+                //b.总积分-5000000
+                final int totalI = lastBallsMapper.updateTotalScore(-5000000);
+                if (totalI != 1) {
+                    return AjaxResult.error("兑一等奖出错,#-5000000");
+                }
+                final int userI = lastBallsMapper.updateUserScoreByUsername(5000000, SecurityUtils.getUsername());
+                if (userI != 1) {
+                    return AjaxResult.error("兑一等奖出错,#+5000000");
+                }
+
             } else if (buyRecordDTO.getBlueBalls().equals(rightBallsDTO.getBlueBalls()) && !(buyRecordDTO.getRedBall().equals(rightBallsDTO.getRedBall()))) {
                 buyRecordDTO.setRightBallFlag("二等奖");//中二等奖,蓝球全对，红球不对
                 buyRecordDTO.setCheckScoreFlag("已兑奖");
-                //TODO 获得1000000积分
+                // 获得1000000积分
+                final int totalI = lastBallsMapper.updateTotalScore(-1000000);
+                if (totalI != 1) {
+                    return AjaxResult.error("兑二等奖出错,#-1000000");
+                }
+                final int userI = lastBallsMapper.updateUserScoreByUsername(1000000, SecurityUtils.getUsername());
+                if (userI != 1) {
+                    return AjaxResult.error("兑二等奖出错,#+1000000");
+                }
+
             } else if (countThird == 5 && buyRecordDTO.getRedBall().equals(rightBallsDTO.getRedBall())) {
                 buyRecordDTO.setRightBallFlag("三等奖");//中三等奖，蓝球对5个，红球对1个
                 buyRecordDTO.setCheckScoreFlag("已兑奖");
-                //TODO 获得3000积分
+                // 获得3000积分
+                final int totalI = lastBallsMapper.updateTotalScore(-3000);
+                if (totalI != 1) {
+                    return AjaxResult.error("兑三等奖出错,#-3000");
+                }
+                final int userI = lastBallsMapper.updateUserScoreByUsername(3000, SecurityUtils.getUsername());
+                if (userI != 1) {
+                    return AjaxResult.error("兑三等奖出错,#+3000");
+                }
             } else if ((countThird == 4 && buyRecordDTO.getRedBall().equals(rightBallsDTO.getRedBall())) || (countThird == 5)) {
                 buyRecordDTO.setRightBallFlag("四等奖");//中四等奖，(蓝球对4个，红球对1个)或 (蓝球对5个)
                 buyRecordDTO.setCheckScoreFlag("已兑奖");
-                //TODO 获得200积分
+                // 获得200积分
+                final int totalI = lastBallsMapper.updateTotalScore(-200);
+                if (totalI != 1) {
+                    return AjaxResult.error("兑四等奖出错,#-200");
+                }
+                final int userI = lastBallsMapper.updateUserScoreByUsername(200, SecurityUtils.getUsername());
+                if (userI != 1) {
+                    return AjaxResult.error("兑四等奖出错,#+200");
+                }
             } else if (countThird == 4 || (countThird == 3 && buyRecordDTO.getRedBall().equals(rightBallsDTO.getRedBall()))) {
                 buyRecordDTO.setRightBallFlag("五等奖");//中五等奖，(蓝球对4个)或 (蓝球对3个,红球对1个)
                 buyRecordDTO.setCheckScoreFlag("已兑奖");
+                // 获得10积分
+                final int totalI = lastBallsMapper.updateTotalScore(-10);
+                if (totalI != 1) {
+                    return AjaxResult.error("兑五等奖出错,#-10");
+                }
+                final int userI = lastBallsMapper.updateUserScoreByUsername(10, SecurityUtils.getUsername());
+                if (userI != 1) {
+                    return AjaxResult.error("兑五等奖出错,#+10");
+                }
             } else if ((countThird == 2 && buyRecordDTO.getRedBall().equals(rightBallsDTO.getRedBall()))
                     || (countThird == 1 && buyRecordDTO.getRedBall().equals(rightBallsDTO.getRedBall()))
                     || (buyRecordDTO.getRedBall().equals(rightBallsDTO.getRedBall()))) {
                 buyRecordDTO.setRightBallFlag("六等奖");//中六等奖，(蓝球对2个，红球对1个) 或 (蓝球对1个，红球对1个) 或 (红球对1个)
                 buyRecordDTO.setCheckScoreFlag("已兑奖");
-                //TODO 获得10积分
+                // 获得5积分
+                final int totalI = lastBallsMapper.updateTotalScore(-5);
+                if (totalI != 1) {
+                    return AjaxResult.error("兑六等奖出错,#-5");
+                }
+                final int userI = lastBallsMapper.updateUserScoreByUsername(5, SecurityUtils.getUsername());
+                if (userI != 1) {
+                    return AjaxResult.error("兑六等奖出错,#+5");
+                }
             }else {
                 buyRecordDTO.setRightBallFlag("未中奖");
                 buyRecordDTO.setCheckScoreFlag("未中奖");
-                //TODO 获得5积分
+                //积分不变
             }
         }
 
@@ -198,7 +243,7 @@ public class SysDeptController extends BaseController
         return AjaxResult.success(resInt);
     }
 
-    //管理员按钮，给所有拥有购买记录但"未兑奖"的用户开奖
+    //管理员按钮，给所有拥有购买记录但"待兑奖"的用户开奖
     @PreAuthorize("@ss.hasRole('admin')")
     @PostMapping("/makeRightBalls")
     public AjaxResult makeRightBalls() {
@@ -288,7 +333,11 @@ public class SysDeptController extends BaseController
         return AjaxResult.success();
     }
 
-
+    /**
+     * 红蓝球 购买 按钮
+     * @param dto BuyRecordDTO
+     * @return
+     */
     @PostMapping("/buyLottery")
     public AjaxResult buyLottery(@RequestBody BuyRecordDTO dto) {
 
@@ -299,7 +348,7 @@ public class SysDeptController extends BaseController
         final int countNum = lastBallsDTOS.get(0).getCountNum();
         dto.setCountNum(countNum+1);
 
-        //
+        //给蓝球排序，从小到大:1,2,3,4,5,6
         final String[] split = dto.getBlueBalls().split(",");
         List<Integer> integerList = new ArrayList<>();
         for (int i = 0; i < split.length; i++) {
@@ -313,7 +362,35 @@ public class SysDeptController extends BaseController
 
         System.out.println("排序后的蓝球："+sortedBlueBalls);
 
-        buyRecordMapper.insertOne(dto);
+//        buyRecordMapper.insertOne(dto);
+        //购买需要扣减个人积分
+        final int buyCount = dto.getBuyCount();
+        //2积分1注，
+        int reduceNum = buyCount * 2;
+        if (username.equals("admin")) {
+            return AjaxResult.error("管理员账号不能使用此功能！");
+        }
+        final List<UserScoreDTO> userScoreDTOList = lastBallsMapper.queryScore(username);
+        if (userScoreDTOList.size() == 2) {
+            final UserScoreDTO userScoreDTO = userScoreDTOList.get(1);
+            if (userScoreDTO.getUserScore() - reduceNum < 0) {
+                return AjaxResult.error("此账号积分不足以买这么多注票");
+            }else {
+                userScoreDTO.setUserScore(userScoreDTO.getUserScore() - reduceNum);
+                int changeCol = lastBallsMapper.updateUserScore(userScoreDTO);
+                int changeTotalScore = lastBallsMapper.updateTotalScore(reduceNum);
+                if (changeCol != 1) {
+                    return AjaxResult.error("更新此用户积分时异常！");
+                }
+                if (changeTotalScore != 1) {
+                    return AjaxResult.error("更新总积分时异常！");
+                }
+                buyRecordMapper.insertOne(dto);
+            }
+        }else {
+            return AjaxResult.error("没查到该用户积分信息！");
+        }
+
         return AjaxResult.success(dto);
     }
 

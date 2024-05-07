@@ -30,6 +30,12 @@ public interface LastBallsMapper
     void insertOne(LastBallsDTO lastBallsDTO);
 
     List<UserScoreDTO> queryScore(@Param("username")String username);
+
+    int updateUserScore(UserScoreDTO userScoreDTO);
+
+    int updateTotalScore(int reduceNum);
+
+    int updateUserScoreByUsername(@Param("userScore") int reduceNum, @Param("username")String username);
     /**
      * 查询部门管理数据
      *
