@@ -21,7 +21,12 @@ public interface LastBallsMapper
 
     public List<LastBallsDTO> lastBalls(@Param("userName")String userName);
 
+    //按期数和用户名查询开奖记录
+    public List<LastBallsDTO> getRightBallByCountNum(@Param("userName")String userName,@Param("countNum")String countNum);
+
     public IPage<LastBallsDTO> lastBalls2(IPage<LastBallsDTO> page, @Param("userName")String userName);
+
+    void insertOne(LastBallsDTO lastBallsDTO);
     /**
      * 查询部门管理数据
      *

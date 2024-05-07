@@ -43,10 +43,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="lastBalls" parameterType="string" resultType="com.ruoyi.system.domain.LastBallsDTO">
         SELECT * FROM last_balls where user_name = #{userName} order by create_time desc limit 1
     </select>
+<!--    按期数和用户名查询开奖记录-->
+    <select id="getRightBallByCountNum" resultType="com.ruoyi.system.domain.LastBallsDTO">
+        SELECT * FROM last_balls where user_name = #{userName} and count_num = #{countNum}
+    </select>
 
     <select id="lastBalls2" resultType="com.ruoyi.system.domain.LastBallsDTO">
         SELECT * FROM last_balls where user_name = #{userName} order by create_time desc
     </select>
+
+    <insert id="insertOne" parameterType="com.ruoyi.system.domain.LastBallsDTO">
+        insert into last_balls (user_name,count_num,blue_balls,red_ball)
+        values (#{userName},#{countNum},#{blueBalls},#{redBall})
+    </insert>
 
 <!--	<select id="selectDeptList" parameterType="SysDept" resultMap="SysDeptResult">-->
 <!--        <include refid="selectDeptVo"/>-->

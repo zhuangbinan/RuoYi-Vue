@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.BuyRecordMapper">
+
+
+
+<!--    <resultMap type="LastBallsDTO" id="LastBallsResult">-->
+<!--        <id     property="id"     column="id"     />-->
+<!--        <result property="userName" column="user_name" />-->
+<!--        <result property="countNum" column="count_num" />-->
+<!--        <result property="blueBalls" column="blue_balls" />-->
+<!--        <result property="redBall" column="red_ball" />-->
+<!--        <result property="createTime" column="create_time" />-->
+<!--        <result property="other" column="other" />-->
+<!--    </resultMap>-->
+
+<!--    <select id="lastBalls" parameterType="string" resultType="com.ruoyi.system.domain.LastBallsDTO">-->
+<!--        SELECT * FROM last_balls where user_name = #{userName} order by create_time desc limit 1-->
+<!--    </select>-->
+
+    <select id="query10Chance" resultType="com.ruoyi.system.domain.BuyRecordDTO">
+        SELECT * FROM buy_record where user_name = #{userName} and count_num = #{countNum} order by create_time desc
+    </select>
+
+    <select id="queryNoCheckChance" resultType="com.ruoyi.system.domain.BuyRecordDTO">
+        SELECT * FROM buy_record where check_score_flag = '未兑奖' and user_name = #{userName} and count_num = #{countNum} order by create_time desc
+    </select>
+
+<!--    按照用户购买的记录来作为开奖依据-->
+    <select id="queryAllUserAndCountNum" resultType="com.ruoyi.system.domain.BuyRecordDTO">
+        SELECT max(t1.count_num) as count_num,t2.user_name FROM buy_record t1, (SELECT distinct user_name from buy_record where check_score_flag ='未兑奖') t2 where t1.user_name = t2.user_name group by t2.user_name
+    </select>
+
+    <insert id="insertOne" parameterType="com.ruoyi.system.domain.BuyRecordDTO">
+        insert into buy_record (user_name,count_num,blue_balls,red_ball,buy_count)
+        values (#{userName}, #{countNum}, #{blueBalls}, #{redBall}, #{buyCount})
+    </insert>
+
+    <update id="updateById" parameterType="com.ruoyi.system.domain.BuyRecordDTO">
+        update buy_record set right_ball_flag = #{rightBallFlag} , check_score_flag = #{checkScoreFlag} where id = #{id}
+    </update>
+</mapper>
