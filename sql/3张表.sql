@@ -34,3 +34,7 @@ CREATE TABLE `last_balls` (
                               `other` varchar(45) DEFAULT NULL COMMENT '其他',
                               PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='最新一期中奖数据，根据账号和期数与账号相关';
+
+-- 这里有需要初始化的表，last_balls,购买期数是0，蓝球，红球字段随便填。
+insert into last_balls (user_name,count_num,blue_balls,red_ball)
+values ('你想初始化的userName',0,'0',0);
