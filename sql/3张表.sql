@@ -8,7 +8,7 @@ CREATE TABLE `buy_record` (
                               `other` varchar(45) DEFAULT NULL,
                               `buy_count` int DEFAULT '1' COMMENT '购买注数',
                               `right_ball_flag` varchar(45) DEFAULT NULL COMMENT '中奖标识：一等奖，二等奖，三等奖，四等奖，五等奖，六等奖，未中奖。',
-                              `check_score_flag` varchar(45) DEFAULT '待兑奖' COMMENT '兑奖标识：已兑奖，未兑奖，未中奖。',
+                              `check_score_flag` varchar(45) DEFAULT '待兑奖' COMMENT '兑奖标识：已兑奖，待兑奖，未中奖。',
                               PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=106 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='购买记录表';
 
