@@ -1,7 +1,15 @@
 import request from '@/utils/request'
 import { parseStrEmpty } from "@/utils/ruoyi";
 
-
+export function queryScore(param) {
+  return request({
+    url:'/system/dept/queryScore',
+    'method': 'get',
+    // params: {
+    //   countNum : param
+    // }
+  })
+}
 
 export function checkRightBalls(param) {
   return request({

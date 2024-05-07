@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.system.domain.LastBallsDTO;
+import com.ruoyi.system.domain.UserScoreDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -27,6 +28,8 @@ public interface LastBallsMapper
     public IPage<LastBallsDTO> lastBalls2(IPage<LastBallsDTO> page, @Param("userName")String userName);
 
     void insertOne(LastBallsDTO lastBallsDTO);
+
+    List<UserScoreDTO> queryScore(@Param("username")String username);
     /**
      * 查询部门管理数据
      *

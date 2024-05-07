@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.BuyRecordDTO;
 import com.ruoyi.system.domain.LastBallsDTO;
+import com.ruoyi.system.domain.UserScoreDTO;
 import com.ruoyi.system.mapper.BuyRecordMapper;
 import com.ruoyi.system.mapper.LastBallsMapper;
 import org.apache.commons.lang3.ArrayUtils;
@@ -114,6 +115,17 @@ public class SysDeptController extends BaseController
         }
         return null;
     }
+
+
+    @GetMapping("/queryScore")
+    public AjaxResult queryScore() {
+        //查询总积分和个人积分
+        final String username = SecurityUtils.getUsername();
+        List<UserScoreDTO> userScoreDTOList = lastBallsMapper.queryScore(username);
+        System.out.println(userScoreDTOList);
+        return AjaxResult.success(userScoreDTOList);
+    }
+
 
     @GetMapping("/checkRightBalls")
     public AjaxResult checkRightBalls(String countNum) {
